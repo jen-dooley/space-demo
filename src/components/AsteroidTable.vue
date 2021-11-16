@@ -4,6 +4,10 @@
       :headers="headers"
       :items="formattedAsteroids"
       :loading="loading"
+      :expanded.sync="expanded"
+      sort-by="approachDate"
+      show-expand
+      single-expand
     >
       <template #item.approachDate="{ item }">
         {{ item.approachDate | formatDate }}
@@ -31,6 +35,13 @@
       <template #item.missedBy="{ item }">
         {{ item.missedBy | formatNumber }}
       </template>
+      <template #expanded-item="{ headers, item }">
+        <td :colspan="headers.length" class="pa-2">
+          <pre class="grey lighten-3 rounded pa-2" style="font-size: 12px">{{
+            item.originalStructure
+          }}</pre>
+        </td>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -45,6 +56,7 @@ export default {
     loading: Boolean,
   },
   data: () => ({
+    expanded: [],
     // Table formatting info
     headers: [
       {
@@ -61,14 +73,15 @@ export default {
         text: "Missed By (Miles)",
         value: "missedBy",
       },
+      { text: "", value: "data-table-expand" },
     ],
   }),
   computed: {
     // Flatted and format the API data so the table can use it
     formattedAsteroids() {
-      return Object.values(this.asteroids)
-        .map((daysAsteroids) => {
-          return daysAsteroids.map((asteroid) => ({
+      return Object.entries(this.asteroids)
+        .map(([key, daysAsteroids]) => {
+          return daysAsteroids.map((asteroid, index) => ({
             ...asteroid,
             approachDate:
               asteroid.close_approach_data[0].epoch_date_close_approach,
@@ -77,6 +90,7 @@ export default {
               max: asteroid.estimated_diameter.feet.estimated_diameter_max,
             },
             missedBy: asteroid.close_approach_data[0].miss_distance.miles,
+            originalStructure: this.asteroids[key][index],
           }));
         })
         .flat();
