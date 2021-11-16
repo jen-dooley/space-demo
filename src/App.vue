@@ -1,28 +1,52 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <v-app>
+    <v-main>
+      <v-container class="fill-height">
+        <v-row align="center" justify="center">
+          <v-col>
+            <v-card>
+              <v-card-title>Near Earth Asteroid Approaches</v-card-title>
+              <asteroid-table
+                :asteroids="asteroids"
+                :loading="asteroidsLoading"
+              />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import AsteroidTable from "./components/AsteroidTable";
 
 export default {
   name: "App",
-  components: {
-    HelloWorld,
+  components: { AsteroidTable },
+  data: () => ({
+    searchForm: {
+      start_date: undefined,
+      end_date: undefined,
+    },
+    asteroidsLoading: true,
+    asteroids: {},
+  }),
+  mounted() {
+    this.getAsteroids();
+  },
+  methods: {
+    async getAsteroids() {
+      this.asteroidsLoading = true;
+
+      // Request asteroid data
+      const { data } = await this.$axios.get("/neo/rest/v1/feed", {
+        params: this.searchForm,
+      });
+
+      this.asteroids = data.near_earth_objects;
+      this.asteroidsLoading = false;
+    },
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
