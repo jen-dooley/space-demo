@@ -6,6 +6,7 @@
           <v-col>
             <v-card>
               <v-card-title>Near Earth Asteroid Approaches</v-card-title>
+              <search-form v-model="searchForm" :loading="asteroidsLoading" />
               <asteroid-table
                 :asteroids="asteroids"
                 :loading="asteroidsLoading"
@@ -20,10 +21,12 @@
 
 <script>
 import AsteroidTable from "./components/AsteroidTable";
+import SearchForm from "./components/SearchForm";
+import { DateTime } from "luxon";
 
 export default {
   name: "App",
-  components: { AsteroidTable },
+  components: { AsteroidTable, SearchForm },
   data: () => ({
     searchForm: {
       start_date: undefined,
@@ -33,7 +36,14 @@ export default {
     asteroids: {},
   }),
   mounted() {
+    const now = DateTime.now().startOf("day");
+    this.searchForm.start_date = now.minus({ days: 7 }).toSQLDate();
+    this.searchForm.end_date = now.toSQLDate();
+
     this.getAsteroids();
+  },
+  watch: {
+    searchForm: { deep: true, handler: "getAsteroids" },
   },
   methods: {
     async getAsteroids() {
