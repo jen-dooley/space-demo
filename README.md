@@ -1,4 +1,6 @@
-# space-demo
+# NASA API - Space Demo
+
+This is a simple Vue application using the NASA API, it displays a list of recent near earth asteroid approaches using the Asteroids NeoWs API. It also retrieved the daily image from NASA's APOD API.
 
 ## Project setup
 ```
