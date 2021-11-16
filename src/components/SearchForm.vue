@@ -6,14 +6,14 @@
           label="Start Date"
           v-model="searchForm.start_date"
           :min="minDate"
-          :max="maxDate"
+          :max="searchForm.end_date"
         />
       </v-col>
       <v-col cols="6" sm="4">
         <date-input
           label="End Date"
           v-model="searchForm.end_date"
-          :min="minDate"
+          :min="searchForm.start_date"
           :max="maxDate"
         />
       </v-col>
@@ -43,6 +43,7 @@ export default {
         this.$emit("input", val);
       },
     },
+    // Instead of using validation just prevent the user from selecting the wrong dates
     minDate() {
       return this.searchForm.end_date
         ? DateTime.fromSQL(this.searchForm.end_date)

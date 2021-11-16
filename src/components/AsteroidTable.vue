@@ -6,14 +6,18 @@
       :loading="loading"
       :expanded.sync="expanded"
       sort-by="approachDate"
+      sort-desc
       show-expand
       single-expand
     >
+      <!-- Format date in the template so that the sorting still works correctly -->
       <template #item.approachDate="{ item }">
         {{ item.approachDate | formatDate }}
       </template>
       <template #item.name="{ item }">
-        <a :href="item.nasa_jpl_url" target="_blank">{{ item.name }}</a>
+        <!-- Originally tried to link to JPL here but the link wasnt a public page -->
+        <span>{{ item.name }}</span>
+        <!-- Subtle but effective way to bring attention to small detail -->
         <v-tooltip v-if="item.is_potentially_hazardous_asteroid" right>
           <template #activator="{ on, attrs }">
             <v-icon
@@ -28,18 +32,24 @@
           <span>This asteroid is potentially hazardous!</span>
         </v-tooltip>
       </template>
+      <!-- Format numbers in the template so that the sorting still works correctly -->
       <template #item.diameter.min="{ item }">
         {{ item.diameter.min | formatNumber }} -
         {{ item.diameter.max | formatNumber }}
       </template>
+      <!-- Format numbers in the template so that the sorting still works correctly -->
       <template #item.missedBy="{ item }">
         {{ item.missedBy | formatNumber }}
       </template>
+      <!-- Expanded slot JSON -->
       <template #expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="pa-2">
-          <pre class="grey lighten-3 rounded pa-2" style="font-size: 12px">{{
-            item.originalStructure
-          }}</pre>
+          <pre
+            class="grey rounded pa-2"
+            :class="$vuetify.theme.dark ? 'darken-3' : 'lighten-3'"
+            style="font-size: 12px"
+            >{{ item.originalStructure }}</pre
+          >
         </td>
       </template>
     </v-data-table>
